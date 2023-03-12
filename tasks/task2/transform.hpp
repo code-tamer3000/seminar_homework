@@ -1,18 +1,14 @@
 template <class T>
-void reset_values(T* begin, const std::vector<T>& hold, const std::vector<size_t>& hold_index) {
-    T* undo = begin;
-    for (int i = 0; i < hold_index[0]; undo++, i++) {}
-    *undo = hold[0];
-    for (size_t i = 1; i < hold.size(); i++) {
-        for (size_t i = 0; i < hold_index[i] - hold_index[i - 1]; undo++, i++) {}
-        *undo = hold[i];
+void reset_values(const std::vector<T>& hold, const std::vector<T*>& place_to_insert) {
+    for (size_t i = 0; i < hold.size(); i++) {
+        *place_to_insert[i] = hold[i];
     }
 }
 
 template <class T>
 void TransformIf(T* begin, T* end, bool (*p)(const T&), void (*f)(T&)) {
     std::vector<T> hold;
-    std::vector<size_t> hold_index;
+    std::vector<T*> place_to_insert;
     bool success_copy = true;
     for (T* curr = begin; curr != end; curr++) {
 
@@ -21,7 +17,7 @@ void TransformIf(T* begin, T* end, bool (*p)(const T&), void (*f)(T&)) {
         try {
             success_p = p(*curr);
         } catch(...) {
-            if (success_copy) reset_values(begin, hold, hold_index);
+            if (success_copy) reset_values(hold, place_to_insert);
             throw;
         }
         
@@ -29,7 +25,7 @@ void TransformIf(T* begin, T* end, bool (*p)(const T&), void (*f)(T&)) {
 
             try {
                 hold.push_back(*curr);
-                hold_index.push_back(curr - begin);
+                place_to_insert.push_back(curr);
             } catch (...) {
                 success_copy = false;
             }
@@ -37,7 +33,7 @@ void TransformIf(T* begin, T* end, bool (*p)(const T&), void (*f)(T&)) {
             try {
                 f(*curr);
             } catch (...) {
-                if (success_copy) reset_values(begin, hold, hold_index);
+                if (success_copy) reset_values(hold, place_to_insert);
                 throw;
             }
         }
