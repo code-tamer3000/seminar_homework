@@ -1,7 +1,10 @@
 template <class T>
-void reset_values(T* begin, std::vector<T>& hold, std::vector<size_t>& hold_index) {
-    for (size_t i = 0; i < hold.size(); i++) {
-        T* undo = begin + hold_index[i];
+void reset_values(T* begin, const std::vector<T>& hold, const std::vector<size_t>& hold_index) {
+    T* undo = begin;
+    for (int i = 0; i < hold_index[0]; undo++, i++) {}
+    *undo = hold[0];
+    for (size_t i = 1; i < hold.size(); i++) {
+        for (size_t i = 0; i < hold_index[i] - hold_index[i - 1]; undo++, i++) {}
         *undo = hold[i];
     }
 }
@@ -10,31 +13,31 @@ template <class T>
 void TransformIf(T* begin, T* end, bool (*p)(const T&), void (*f)(T&)) {
     std::vector<T> hold;
     std::vector<size_t> hold_index;
-    bool succses_copy = true;
+    bool success_copy = true;
     for (T* curr = begin; curr != end; curr++) {
 
-        bool succses_p = false;
+        bool success_p = false;
 
         try {
-            succses_p = p(*curr);
+            success_p = p(*curr);
         } catch(...) {
-            if (succses_copy) reset_values(begin, hold, hold_index);
+            if (success_copy) reset_values(begin, hold, hold_index);
             throw;
         }
         
-        if (succses_p) {
+        if (success_p) {
 
             try {
                 hold.push_back(*curr);
                 hold_index.push_back(curr - begin);
             } catch (...) {
-                succses_copy = false;
+                success_copy = false;
             }
 
             try {
                 f(*curr);
             } catch (...) {
-                if (succses_copy) reset_values(begin, hold, hold_index);
+                if (success_copy) reset_values(begin, hold, hold_index);
                 throw;
             }
         }
