@@ -1,7 +1,5 @@
 #pragma once
 
-// When chunk is free 'next' contains pointer to a next free chunk
-// When it's allocated, this space is used by user
 struct Chunk {
     Chunk* next;
 };
@@ -14,11 +12,14 @@ public:
         if (alloc_ == nullptr) {
             alloc_ = allocateBlock(size);
         }
-        // your code goes here
+        Chunk* FreeMemory = alloc_; 
+        alloc_ = alloc_->next;
+        return FreeMemory;
     }
 
     void deallocate(void* chunk, size_t size) {
-        // your code goes here
+        reinterpret_cast<Chunk*>(chunk)->next = alloc_;
+        alloc_ = reinterpret_cast<Chunk*>(chunk);
     }
 
 private:
@@ -27,6 +28,13 @@ private:
 
 private:
     Chunk* allocateBlock(size_t chunkSize) {
-        // your code goes here
+        Chunk* BlockBeginning = reinterpret_cast<Chunk*>(malloc(chunkSize * chunksPerBlock_));
+        Chunk* tmp = BlockBeginning;
+        for (size_t i = 0; i < chunksPerBlock_ - 1; i++) {
+            tmp->next = reinterpret_cast<Chunk*>(reinterpret_cast<char*>(tmp) + chunkSize);
+            tmp = tmp->next;
+        }
+        tmp->next = nullptr;
+        return BlockBeginning;
     }
 };
