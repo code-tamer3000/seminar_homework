@@ -44,14 +44,14 @@ class IndexedIterator {
     }
     
     IndexedIterator<Iterator> operator++(int) {
-        IndexedIterator<Iterator> copy = *this;
+        auto copy = *this;
         ++it_;
         ++index_;
         return copy;
     }
     
     IndexedIterator<Iterator> operator--(int) {
-        IndexedIterator<Iterator> copy = *this;
+        auto copy = *this;
         --it_;
         --index_;
         return copy;
@@ -76,13 +76,13 @@ class IndexedIterator {
     }
     
     IndexedIterator<Iterator> operator-(int n) {
-        IndexedIterator<Iterator> copy = *this;
+        auto copy = *this;
         copy -= n;
         return copy;
     }
     
-    int operator-(const IndexedIterator<Iterator>& other) {
-        int dif = it_ - other.it_;
+    difference_type operator-(const IndexedIterator<Iterator>& other) {
+        auto dif = it_ - other.it_;
         return dif;
     }
     
