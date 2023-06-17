@@ -23,11 +23,15 @@ class IndexedIterator {
         return index_;
     }
     
-    reference operator*() const {
+    const reference operator*() const {
         return *it_;
     }
 
-    reference operator->() const {
+    reference operator*() {
+        return *it_;
+    }
+
+    pointer operator->() const {
         return it_;
     }
     
