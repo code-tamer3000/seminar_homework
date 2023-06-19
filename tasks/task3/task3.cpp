@@ -78,3 +78,15 @@ TEST(IterateOver, stress) {
         ASSERT_EQ(i, iter.index());
     }
 }
+
+TEST(IterateOver, isEqual) {
+    std::vector<int> v { 0, 1, 2, 3, 4, 5 };
+    auto ii = CreateIndexedIterator(v.begin());
+    auto ii_3 = ii + 3;
+    for (; ii != v.end(); ++ii) {
+        if (ii == ii_3) {
+            ASSERT_EQ(ii_3, ii);
+            break;
+        }
+    }
+}
